@@ -30,7 +30,7 @@ class ProjectListAPIView(APIView):
 
 class ProjectCreateAPIView(APIView):
     """
-    Create a new project. 
+    Create a new project.
     The cache is invalidated after creating a new project.
 
     Input data => { \n
@@ -57,11 +57,29 @@ class ProjectDetailAPIView(APIView):
             raise status.HTTP_404_NOT_FOUND
 
     def get(self, request, pk):
+        """
+        Retrieve the details of a specific project by its ID.
+
+        Args:
+            pk (int): The primary key of the project.
+        """
         project = self.get_object(pk)
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
 
     def put(self, request, pk):
+        """
+        Update the details of a specific project by its ID.
+        The cache is invalidated after updating the project.
+
+        Args:
+            pk (int): The primary key of the project.
+
+        Input data => { \n
+            "name": "str", \n
+            "description": "str"
+        }
+        """
         project = self.get_object(pk)
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
@@ -72,6 +90,13 @@ class ProjectDetailAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        """
+        Delete a specific project by its ID.
+        The cache is invalidated after deleting the project.
+
+        Args:
+            pk (int): The primary key of the project.
+        """
         project = self.get_object(pk)
         project.delete()
         # Invalidate cache after deleting project
