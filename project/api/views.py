@@ -1,3 +1,6 @@
+from django.core.cache import cache
+from django.conf import settings
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,16 +9,42 @@ from ..models import Project
 from .serializers import ProjectSerializer
 
 
-class ProjectListCreateAPIView(APIView):
+class ProjectListAPIView(APIView):
+    """
+    Return a list of all projects.
+    The list is cached to reduce database load.
+    """
+
     def get(self, request):
-        projects = Project.objects.all()
+        # Attempt to fetch projects from cache
+        projects = cache.get("projects_list")
+
+        if not projects:
+            # If not cached, fetch from database
+            projects = Project.objects.all()
+            # Cache the result for CACHE_TIMEOUT seconds
+            cache.set("projects_list", projects, timeout=settings.CACHE_TIMEOUT)
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
+
+
+class ProjectCreateAPIView(APIView):
+    """
+    Create a new project. 
+    The cache is invalidated after creating a new project.
+
+    Input data => { \n
+        "name": "str", \n
+        "description": "str"
+    }
+    """
 
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # Invalidate cache after creating a new project
+            cache.delete("projects_list")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -37,10 +66,14 @@ class ProjectDetailAPIView(APIView):
         serializer = ProjectSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # Invalidate cache after updating project
+            cache.delete("projects_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         project = self.get_object(pk)
         project.delete()
+        # Invalidate cache after deleting project
+        cache.delete("projects_list")
         return Response(status=status.HTTP_204_NO_CONTENT)
