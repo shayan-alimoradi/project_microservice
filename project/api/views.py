@@ -7,6 +7,7 @@ from rest_framework import status
 
 from ..models import Project
 from .serializers import ProjectSerializer
+from .publisher import publish
 
 
 class ProjectListAPIView(APIView):
@@ -44,6 +45,7 @@ class ProjectCreateAPIView(APIView):
             serializer.save()
             # Invalidate cache after creating a new project
             cache.delete("project_list")
+            publish("create_project", serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
