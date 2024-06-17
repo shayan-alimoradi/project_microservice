@@ -90,6 +90,8 @@ class ProjectDetailAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             # Invalidate cache after updating project
+            cache_key = f"project_{pk}"
+            cache.delete(cache_key)
             cache.delete("project_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -105,5 +107,7 @@ class ProjectDetailAPIView(APIView):
         project = self.get_object(pk)
         project.delete()
         # Invalidate cache after deleting project
+        cache_key = f"project_{pk}"
+        cache.delete(cache_key)
         cache.delete("project_list")
         return Response(status=status.HTTP_204_NO_CONTENT)

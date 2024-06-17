@@ -11,7 +11,7 @@ urlpatterns = [
         "project-create/", views.ProjectCreateAPIView.as_view(), name="project-create"
     ),
     path(
-        "projects/<int:pk>/",
+        "project/<int:pk>/",
         views.ProjectDetailAPIView.as_view(),
         name="project-detail",
     ),
