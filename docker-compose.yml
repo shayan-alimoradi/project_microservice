@@ -14,6 +14,7 @@ services:
     depends_on:
       - db
       - redis
+      - rabbitmq
     networks:
       - project-network
 
@@ -32,6 +33,15 @@ services:
   redis:
     container_name: project_redis
     image: redis:latest
+    networks:
+      - project-network
+  
+  rabbitmq:
+    container_name: project_rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - project-network
 
