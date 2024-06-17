@@ -16,16 +16,15 @@ class ProjectListAPIView(APIView):
     """
 
     def get(self, request):
-        # Attempt to fetch projects from cache
-        projects = cache.get("projects_list")
-
-        if not projects:
-            # If not cached, fetch from database
+        cache_key = "project_list"
+        if cache_key in cache:
+            data = cache.get(cache_key)
+        else:
             projects = Project.objects.all()
-            # Cache the result for CACHE_TIMEOUT seconds
-            cache.set("projects_list", projects, timeout=settings.CACHE_TIMEOUT)
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data)
+            serializer = ProjectSerializer(projects, many=True)
+            data = serializer.data
+            cache.set(cache_key, data)
+        return Response(data)
 
 
 class ProjectCreateAPIView(APIView):
@@ -44,7 +43,7 @@ class ProjectCreateAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             # Invalidate cache after creating a new project
-            cache.delete("projects_list")
+            cache.delete("project_list")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -63,9 +62,15 @@ class ProjectDetailAPIView(APIView):
         Args:
             pk (int): The primary key of the project.
         """
-        project = self.get_object(pk)
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data)
+        cache_key = f"project_{pk}"
+        if cache_key in cache:
+            data = cache.get(cache_key)
+        else:
+            project = self.get_object(pk)
+            serializer = ProjectSerializer(project)
+            data = serializer.data
+            cache.set(cache_key, data)
+        return Response(data)
 
     def put(self, request, pk):
         """
@@ -85,7 +90,7 @@ class ProjectDetailAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             # Invalidate cache after updating project
-            cache.delete("projects_list")
+            cache.delete("project_list")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -100,5 +105,5 @@ class ProjectDetailAPIView(APIView):
         project = self.get_object(pk)
         project.delete()
         # Invalidate cache after deleting project
-        cache.delete("projects_list")
+        cache.delete("project_list")
         return Response(status=status.HTTP_204_NO_CONTENT)
