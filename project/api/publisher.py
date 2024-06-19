@@ -4,7 +4,9 @@ import json
 
 def publish(method, body):
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host="project_rabbitmq", port=5672))
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host="project_rabbitmq", port=5672)
+        )
         channel = connection.channel()
         properties = pika.BasicProperties(method)
         channel.basic_publish(
