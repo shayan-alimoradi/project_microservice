@@ -28,7 +28,8 @@ Make sure you have Docker and Docker Compose installed on your machine.
    ```
 
 2. Build and run the application:
-    First run this command to create a network
+
+    First run this command to create the project network
     ```
     docker network create project-network
     ```
@@ -41,7 +42,7 @@ Make sure you have Docker and Docker Compose installed on your machine.
     docker-compose exec -it project_backend python manage.py createsuperuser
     ```
 
-4. Access the application:
+4. Access the application and swagger:
     ```bash
     The API endpoints will be available at http://localhost:8000/.
     ```
