@@ -69,7 +69,7 @@ Make sure you have Docker and Docker Compose installed on your machine.
     ```
     This will execute unit tests for API endpoints and caching logic.
 <br/><br/>
-# Integration with Publisher Microservice
+# Integration with Task Microservice
 
 Upon creating a project, data is published to the Task Microservice automatically.
 <br/><br/>
