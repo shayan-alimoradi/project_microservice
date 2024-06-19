@@ -25,18 +25,31 @@ Make sure you have Docker and Docker Compose installed on your machine.
    ```bash
    git clone https://github.com/shayan-alimoradi/project_microservice
    cd project_microservice
+   ```
 
 2. Build and run the application:
+    First run this command to create a network
+    ```
+    docker network create project-network
+    ```
     ```bash
     docker-compose up -d --build
+    ```
 
 3. Create a superuser (optional):
     ```bash
     docker-compose exec -it project_backend python manage.py createsuperuser
+    ```
 
 4. Access the application:
     ```bash
     The API endpoints will be available at http://localhost:8000/.
+    ```
+    ```bash
+    The swagger will be available at http://localhost:8000/swagger/.
+    ```
+    ```bash
+    The redoc will be available at http://localhost:8000/redoc/.
     ```
 
     __API Endpoints__
