@@ -39,7 +39,7 @@ Make sure you have Docker and Docker Compose installed on your machine.
 
 3. Create a superuser (optional):
     ```bash
-    docker-compose exec -it project_backend python manage.py createsuperuser
+    docker exec -it project_backend python manage.py createsuperuser
     ```
 
 4. Access the application and swagger:
@@ -65,7 +65,7 @@ Make sure you have Docker and Docker Compose installed on your machine.
 
     To run tests and verify Redis caching:
     ```bash
-    docker-compose exec -it project_backend python manage.py test
+    docker exec -it project_backend python manage.py test
     ```
     This will execute unit tests for API endpoints and caching logic.
 <br/><br/>
